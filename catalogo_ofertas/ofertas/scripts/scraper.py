@@ -81,8 +81,12 @@ def run():
                 )
 
                 logger.info(f"Produto salvo: {name} - R${price}")
+            except NoSuchElementException as e:
+                logger.error(f"Elemento não encontrado: {e}")
+            except TimeoutException as e:
+                logger.error(f"Timeout ao carregar elemento: {e}")
             except Exception as e:
-                logger.error(f"Erro ao processar produto: {e}")
+                logger.error(f"Erro inesperado: {e}")
 
     except Exception as e:
         logger.error(f"Erro geral no scraping: {e}")
