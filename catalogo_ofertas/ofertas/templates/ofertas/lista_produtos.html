@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Produtos</title>
+</head>
+<body>
+    <h1>Produtos Encontrados</h1>
+
+    <!-- Filtros -->
+    <h2>Filtros:</h2>
+    <a href="?frete_gratis=1">Frete Grátis</a>
+    <a href="?full=1">Entregue pelo Full</a>
+
+    <!-- Ordenação -->
+    <h2>Ordenação:</h2>
+    <a href="?ordenacao=maior_preco">Maior Preço</a>
+    <a href="?ordenacao=menor_preco">Menor Preço</a>
+    <a href="?ordenacao=maior_desconto">Maior Desconto</a>
+
+    <!-- Extras -->
+    <h2>Destaques:</h2>
+    <p>Maior Preço: {{ maior_preco.nome }} - R$ {{ maior_preco.preco }}</p>
+    <p>Menor Preço: {{ menor_preco.nome }} - R$ {{ menor_preco.preco }}</p>
+    <p>Maior Desconto: {{ maior_desconto.nome }} - {{ maior_desconto.percentual_desconto }}% OFF</p>
+
+    <!-- Lista de Produtos -->
+    <ul>
+        {% for produto in produtos %}
+        <li>
+            <img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+            <h2>{{ produto.nome }}</h2>
+            <p>Preço: R$ {{ produto.preco }}</p>
+            <p>Parcelamento: {{ produto.parcelamento }}</p>
+            <p><a href="{{ produto.link }}">Ver Produto</a></p>
+            {% if produto.preco_sem_desconto %}
+            <p>Preço sem Desconto: R$ {{ produto.preco_sem_desconto }}</p>
+            <p>Desconto: {{ produto.percentual_desconto }}%</p>
+            {% endif %}
+            <p>Tipo de Entrega: {{ produto.tipo_entrega }}</p>
+            {% if produto.frete_gratis %}
+            <p>Frete Grátis: Sim</p>
+            {% else %}
+            <p>Frete Grátis: Não</p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
