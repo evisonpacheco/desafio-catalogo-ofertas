@@ -20,5 +20,5 @@ from ofertas import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('produtos/', views.lista_produtos, name='lista_produtos'),
+    path('produtos/', views.products_list, name='products_list'),
 ]

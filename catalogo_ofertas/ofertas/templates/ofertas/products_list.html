@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Produtos</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1 class="page-title">Produtos Encontrados</h1>
+
+    <!-- Filtros -->
+    <div class="center">
+        <h2 class="filters__title">Filtros:</h2>
+        <a href="?free_shipping=1" class="filters__link">Frete Grátis</a>
+        <a href="?full=1" class="filters__link">Entregue pelo Full</a>
+    </div>
+
+    <!-- Ordenação -->
+    <div class="center">
+        <h2 class="sorting__title">Ordenação:</h2>
+        <a href="?sorting=highest_price" class="sorting__link">Maior Preço</a>
+        <a href="?sorting=lowest_price" class="sorting__link">Menor Preço</a>
+        <a href="?sorting=highest_discount" class="sorting__link">Maior Desconto</a>
+    </div>
+
+    <!-- Extras -->
+    <div class="center">
+        <h2 class="highlights__title">Destaques:</h2>
+        <p class="highlights__item">Maior Preço: {{ highest_price.name }} - R$ {{ highest_price.price }}</p>
+        <p class="highlights__item">Menor Preço: {{ lowest_price.name }} - R$ {{ lowest_price.price }}</p>
+        <p class="highlights__item">Maior Desconto: {{ highest_discount.name }} - {{ highest_discount.discount_percentage }}% OFF</p>
+    </div>
+
+    <!-- Lista de Produtos -->
+    <ul class="product-list">
+        {% for product in products %}
+        <li class="product-list__item">
+            <img src="{{ product.image }}" alt="{{ product.name }}" class="product-list__image">
+            <h2 class="product-list__title">{{ product.name }}</h2>
+            <p class="product-list__price">Preço: R$ {{ product.price }}</p>
+            <p class="product-list__installments">Parcelamento: {{ product.installments }}</p>
+            <p><a href="{{ product.link }}" class="product-list__link" target="_blank">Ver Produto</a></p>
+            {% if product.price_without_discount %}
+            <p class="product-list__old-price">Preço sem Desconto: R$ {{ product.price_without_discount }}</p>
+            <p class="product-list__discount">Desconto: {{ product.discount_percentage }}%</p>
+            {% endif %}
+            <p class="product-list__delivery">Tipo de Entrega: {{ product.delivery_type }}</p>
+            {% if product.free_shipping %}
+            <p class="product-list__shipping">Frete Grátis: Sim</p>
+            {% else %}
+            <p class="product-list__shipping">Frete Grátis: Não</p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

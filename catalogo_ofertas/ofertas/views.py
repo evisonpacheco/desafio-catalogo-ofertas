@@ -1,38 +1,38 @@
 from django.shortcuts import render
-from ofertas.models import Produto
+from ofertas.models import Product 
 
-def lista_produtos(request):
+def products_list(request):
     # Filtros
-    produtos = Produto.objects.all()
+    products = Product.objects.all()
 
-    # Filtro por Frete Grátis
-    if request.GET.get('frete_gratis'):
-        produtos = produtos.filter(frete_gratis=True)
+    # Filtro por Frete Grátis (Free Shipping)
+    if request.GET.get('free_shipping'):
+        products = products.filter(free_shipping=True)
 
-    # Filtro por Entrega Full
+    # Filtro por Entrega Full (Full Delivery)
     if request.GET.get('full'):
-        produtos = produtos.filter(tipo_entrega__icontains='Full')
+        products = products.filter(delivery_type__icontains='Full')
 
-    # Ordenação
-    ordenacao = request.GET.get('ordenacao')
-    if ordenacao == 'maior_preco':
-        produtos = produtos.order_by('-preco')
-    elif ordenacao == 'menor_preco':
-        produtos = produtos.order_by('preco')
-    elif ordenacao == 'maior_desconto':
-        produtos = produtos.order_by('-percentual_desconto')
+    # Ordenação (Sorting)
+    sorting = request.GET.get('sorting')
+    if sorting == 'highest_price':
+        products = products.order_by('-price')
+    elif sorting == 'lowest_price':
+        products = products.order_by('price')
+    elif sorting == 'highest_discount':
+        products = products.order_by('-discount_percentage')
 
     # Extra: Produtos com maior preço, menor preço e maior desconto
-    maior_preco = produtos.order_by('-preco').first()
-    menor_preco = produtos.order_by('preco').first()
-    maior_desconto = produtos.order_by('-percentual_desconto').first()
+    highest_price = products.order_by('-price').first()
+    lowest_price = products.order_by('price').first()
+    highest_discount = products.order_by('-discount_percentage').first()
 
     # Passa os produtos e os extras para o template
     context = {
-        'produtos': produtos,
-        'maior_preco': maior_preco,
-        'menor_preco': menor_preco,
-        'maior_desconto': maior_desconto,
+        'products': products,
+        'highest_price': highest_price,
+        'lowest_price': lowest_price,
+        'highest_discount': highest_discount,
     }
 
-    return render(request, 'ofertas/lista_produtos.html', context)
+    return render(request, 'ofertas/products_list.html', context)

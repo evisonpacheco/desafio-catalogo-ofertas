@@ -1,4 +1,4 @@
-from ofertas.models import Produto
+from ofertas.models import Product
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -6,83 +6,85 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 import logging
 
-
+# Configuração do logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def run():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
-
+    chrome_options.add_argument("--headless")  # Execução sem interface gráfica
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
+    wait = WebDriverWait(driver, 10)  # Tempo de espera explícito
 
-    driver.get("https://www.mercadolivre.com.br")
-    search_box = driver.find_element(By.NAME, "as_word")
-    search_box.send_keys("Computador Gamer i7 16gb ssd 1tb")
-    search_box.submit()
+    try:
+        driver.get("https://www.mercadolivre.com.br")
+        search_box = wait.until(EC.presence_of_element_located((By.NAME, "as_word")))
+        search_box.send_keys("Computador Gamer i7 16gb ssd 1tb")
+        search_box.submit()
 
-    time.sleep(5)
+        wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ui-search-layout__item')))
+        products = driver.find_elements(By.CSS_SELECTOR, '.ui-search-layout__item')
 
-    # try:
-    #     # Espera até que os produtos sejam carregados
-    #     WebDriverWait(driver, 10).until(
-    #         EC.presence_of_element_located((By.CSS_SELECTOR, '.ui-search-layout__item'))
-    #     )
-
-    produtos = driver.find_elements(By.CSS_SELECTOR, '.ui-search-layout__item')
-
-    for produto in produtos:
-        try:
-            nome = produto.find_element(By.CSS_SELECTOR, '.poly-component__title').text
-            preco = produto.find_element(By.CSS_SELECTOR, '.poly-price__current .andes-money-amount__fraction').text
-            preco = preco.replace('R$', '').replace('\n', '').replace('.', '')
-            preco = float(preco)
-            link = produto.find_element(By.CSS_SELECTOR, '.poly-component__title').get_attribute('href')
-            imagem = produto.find_element(By.CSS_SELECTOR, '.poly-component__picture').get_attribute('src')
-            parcelamento = produto.find_element(By.CSS_SELECTOR, '.poly-price__installments').text
-            tipo_entrega = produto.find_element(By.CSS_SELECTOR, '.poly-component__shipping').text
-            frete_gratis = 'Frete grátis' in tipo_entrega
-
+        for product in products:
             try:
-                preco_sem_desconto = produto.find_element(By.CSS_SELECTOR, '.andes-money-amount--previous').text
-                preco_sem_desconto = preco.replace('R$', '').replace('\n', '').replace('.', '')
-                preco_sem_desconto = float(preco)
-                percentual_desconto = produto.find_element(By.CSS_SELECTOR, '.andes-money-amount__discount').text
-            except:
-                preco_sem_desconto = None
-                percentual_desconto = None
+                name = product.find_element(By.CSS_SELECTOR, '.poly-component__title').text.strip()
+                
+                price_str = product.find_element(By.CSS_SELECTOR, '.poly-price__current .andes-money-amount__fraction').text
+                price = float(price_str.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
+                
+                link = product.find_element(By.CSS_SELECTOR, '.poly-component__title').get_attribute('href')
+                
+                image_element = product.find_element(By.CSS_SELECTOR, '.poly-component__picture')
+                image = image_element.get_attribute('src') if image_element else None
+                if image and 'data:' in image:
+                    image = None
+                
+                installment = product.find_element(By.CSS_SELECTOR, '.poly-price__installments').text.strip()
+                
+                try:
+                    delivery_type_element = product.find_element(By.CSS_SELECTOR, '.poly-component__shipping')
+                    delivery_type = delivery_type_element.text.strip()
+                    free_shipping = 'grátis' in delivery_type.lower()
+                except:
+                    delivery_type = None
+                    free_shipping = False
+                
+                try:
+                    original_price_element = product.find_element(By.CSS_SELECTOR, '.andes-money-amount--previous')
+                    price_without_discount = float(original_price_element.text.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
+                except:
+                    price_without_discount = None
+                
+                try:
+                    discount_element = product.find_element(By.CSS_SELECTOR, '.andes-money-amount__discount')
+                    discount_percentage = float(discount_element.text.replace('% OFF', '').strip())
+                except:
+                    discount_percentage = None
+                
+                Product.objects.create(
+                    image=image,
+                    name=name,
+                    price=price,
+                    installment=installment,
+                    link=link,
+                    price_without_discount=price_without_discount,
+                    discount_percentage=discount_percentage,
+                    delivery_type=delivery_type,
+                    free_shipping=free_shipping
+                )
 
-            print(f"Nome: {len(nome)} caracteres")
-            print(f"Parcelamento: {len(parcelamento)} caracteres")
-            print(f"Tipo de Entrega: {len(tipo_entrega)} caracteres")
-            print(f"Percentual de Desconto: {len(str(percentual_desconto))} caracteres")
-            print(f"Link: {len(link)} caracteres")
-            print(f"Imagem: {len(imagem)} caracteres")
+                logger.info(f"Produto salvo: {name} - R${price}")
+            except Exception as e:
+                logger.error(f"Erro ao processar produto: {e}")
 
-            logging.basicConfig(level=logging.INFO)
-            logger = logging.getLogger(__name__)
-            logger.info(f"Nome: {nome}")
-            logger.info(f"Parcelamento: {parcelamento}")
-            logger.info(f"Tipo de Entrega: {tipo_entrega}")
-            logger.info(f"Percentual de Desconto: {percentual_desconto}")
-            logger.info(f"Link: {link}")
-            logger.info(f"Imagem: {imagem}")
-
-            Produto.objects.create(
-                imagem=imagem,
-                nome=nome,
-                preco=preco,
-                parcelamento=parcelamento,
-                link=link,
-                preco_sem_desconto=preco_sem_desconto,
-                percentual_desconto=percentual_desconto,
-                tipo_entrega=tipo_entrega,
-                frete_gratis=frete_gratis
-            )
-
-        except Exception as e:
-            print(f"Erro ao processar produto: {e}")
-
-    driver.quit()
+    except Exception as e:
+        logger.error(f"Erro geral no scraping: {e}")
+    finally:
+        driver.quit()
