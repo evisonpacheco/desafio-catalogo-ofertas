@@ -12,21 +12,27 @@
     <h1 class="page-title">Produtos Encontrados</h1>
 
     <!-- Filtros -->
-    <h2 class="filters__title">Filtros:</h2>
-    <a href="?frete_gratis=1" class="filters__link">Frete Grátis</a>
-    <a href="?full=1" class="filters__link">Entregue pelo Full</a>
+    <div class="center">
+        <h2 class="filters__title">Filtros:</h2>
+        <a href="?frete_gratis=1" class="filters__link">Frete Grátis</a>
+        <a href="?full=1" class="filters__link">Entregue pelo Full</a>
+    </div>
 
     <!-- Ordenação -->
-    <h2 class="sorting__title">Ordenação:</h2>
-    <a href="?ordenacao=maior_preco" class="sorting__link">Maior Preço</a>
-    <a href="?ordenacao=menor_preco" class="sorting__link">Menor Preço</a>
-    <a href="?ordenacao=maior_desconto" class="sorting__link">Maior Desconto</a>
+    <div class="center">
+        <h2 class="sorting__title">Ordenação:</h2>
+        <a href="?ordenacao=maior_preco" class="sorting__link">Maior Preço</a>
+        <a href="?ordenacao=menor_preco" class="sorting__link">Menor Preço</a>
+        <a href="?ordenacao=maior_desconto" class="sorting__link">Maior Desconto</a>
+    </div>
 
     <!-- Extras -->
-    <h2 class="highlights__title">Destaques:</h2>
-    <p class="highlights__item">Maior Preço: {{ maior_preco.nome }} - R$ {{ maior_preco.preco }}</p>
-    <p class="highlights__item">Menor Preço: {{ menor_preco.nome }} - R$ {{ menor_preco.preco }}</p>
-    <p class="highlights__item">Maior Desconto: {{ maior_desconto.nome }} - {{ maior_desconto.percentual_desconto }}% OFF</p>
+    <div class="center">
+        <h2 class="highlights__title">Destaques:</h2>
+        <p class="highlights__item">Maior Preço: {{ maior_preco.nome }} - R$ {{ maior_preco.preco }}</p>
+        <p class="highlights__item">Menor Preço: {{ menor_preco.nome }} - R$ {{ menor_preco.preco }}</p>
+        <p class="highlights__item">Maior Desconto: {{ maior_desconto.nome }} - {{ maior_desconto.percentual_desconto }}% OFF</p>
+    </div>
 
     <!-- Lista de Produtos -->
     <ul class="product-list">
