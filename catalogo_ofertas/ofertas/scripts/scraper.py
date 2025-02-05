@@ -106,22 +106,29 @@ def extract_product_data(product):
     return None
 
 def save_product_data(product_data):
-    # Salva os dados do produto no banco de dados
+    # Salva ou atualiza os dados do produto no banco de dados.
     if product_data:
-        Product.objects.update_or_create(
-            link=product_data['link'],
+        image_url = product_data['image'].strip()
+        
+        # Atualiza ou cria o produto com base no link
+        product, created = Product.objects.update_or_create(
+            image=image_url,
             defaults={
-                'image': product_data['image'],
+                'link': product_data['link'],
                 'name': product_data['name'],
                 'price': product_data['price'],
                 'installment': product_data['installment'],
-                'price_without_discount': product_data['price_without_discount'],
-                'discount_percentage': product_data['discount_percentage'],
+                'price_without_discount': product_data.get('price_without_discount'), 
+                'discount_percentage': product_data.get('discount_percentage'), 
                 'delivery_type': product_data['delivery_type'],
                 'free_shipping': product_data['free_shipping']
             }
         )
-        logger.info(f"Produto salvo: {product_data['name']} - R${product_data['price']}")
+
+        if created:
+            logger.info(f"Produto criado: {product_data['name']} - R${product_data['price']}")
+        else:
+            logger.info(f"Produto atualizado: {product_data['name']} - R${product_data['price']}")
 
 def run():
     # Função principal para executar o scraping
