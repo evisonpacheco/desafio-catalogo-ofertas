@@ -14,11 +14,22 @@ logger = logging.getLogger(__name__)
 
 def run():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Execução sem interface gráfica
-    chrome_options.add_argument("--disable-gpu")
+
+    # Evitar detecção de automação
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--disable-infobars")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    
+    chrome_options.add_argument("--lang=pt-BR")
+    chrome_options.add_argument("--headless") 
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-gpu")    
+    chrome_options.add_argument("--window-size=1920,1080")
+
+    # Definir user-agent
+    user_agent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.64 Safari/537.36"
+    chrome_options.add_argument(f"user-agent={user_agent}")
+
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
     wait = WebDriverWait(driver, 10)  # Tempo de espera explícito
