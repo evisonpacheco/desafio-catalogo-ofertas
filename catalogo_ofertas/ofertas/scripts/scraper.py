@@ -87,7 +87,7 @@ def run():
                     discount_element = product.find_element(By.CSS_SELECTOR, '.andes-money-amount__discount')
                     discount_percentage = float(discount_element.text.replace('% OFF', '').strip())
                 except:
-                    discount_percentage = None
+                    discount_percentage = 0
                 
                 Product.objects.update_or_create(
                     link=link,
