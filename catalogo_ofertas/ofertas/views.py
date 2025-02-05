@@ -25,7 +25,12 @@ def products_list(request):
     # Extra: Produtos com maior preço, menor preço e maior desconto
     highest_price = products.order_by('-price').first()
     lowest_price = products.order_by('price').first()
-    highest_discount = products.order_by('-discount_percentage').first()
+    highest_discount = Product.objects.filter(discount_percentage__isnull=False).order_by('-discount_percentage').first()
+    if not highest_discount:
+        highest_discount = {
+            'name': 'Nenhum Produto com desconto encontrado',
+            'discount_percentage': 0
+        }
 
     # Passa os produtos e os extras para o template
     context = {

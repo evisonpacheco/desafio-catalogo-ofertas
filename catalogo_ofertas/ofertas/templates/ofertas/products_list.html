@@ -30,7 +30,7 @@
         <h2 class="highlights__title">Destaques:</h2>
         <p class="highlights__item">Maior Preço: {{ highest_price.name }} - R$ {{ highest_price.price }}</p>
         <p class="highlights__item">Menor Preço: {{ lowest_price.name }} - R$ {{ lowest_price.price }}</p>
-        <p class="highlights__item">Maior Desconto: {{ highest_discount.name }} - {{ highest_discount.discount_percentage }}% OFF</p>
+        <p class="highlights__item">Maior Desconto: {{ highest_discount.name }} - {% if highest_discount.discount_percentage is not None %}{{ highest_discount.discount_percentage }}% OFF{% else %}0% OFF{% endif %}</p>
     </div>
 
     <!-- Lista de Produtos -->
