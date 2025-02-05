@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import logging
+import random
 
 # Configuração do logging
 logging.basicConfig(
@@ -22,8 +23,14 @@ logger = logging.getLogger(__name__)
 # Constantes
 BASE_URL = "https://www.mercadolivre.com.br"
 SEARCH_QUERY = "Computador Gamer i7 16gb ssd 1tb"
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.64 Safari/537.36"
 WAIT_TIMEOUT = 10
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 10; SM-A505FN) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36",
+]
 
 def setup_driver():
     # Configura e retorna uma instância do WebDriver
@@ -37,11 +44,19 @@ def setup_driver():
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
-    chrome_options.add_argument(f"user-agent={USER_AGENT}")
+
+    user_agent = get_random_user_agent()
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    logger.info(f"User Agent definido para: {user_agent}")
+
     return driver
+
+def get_random_user_agent():
+    # Aplica um user-agent aleatório
+    return random.choice(USER_AGENTS)
 
 def extract_product_data(product):
     # Extrai os dados de um produto
