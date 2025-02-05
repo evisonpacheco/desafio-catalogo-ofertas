@@ -1,3 +1,4 @@
+from decimal import Decimal
 from ofertas.models import Product
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -47,7 +48,7 @@ def extract_product_data(product):
     try:
         name = product.find_element(By.CSS_SELECTOR, '.poly-component__title').text.strip()
         price_str = product.find_element(By.CSS_SELECTOR, '.poly-price__current .andes-money-amount__fraction').text
-        price = float(price_str.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
+        price = Decimal(price_str.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
         link = product.find_element(By.CSS_SELECTOR, '.poly-component__title').get_attribute('href')
 
         # Extrai a imagem do produto
