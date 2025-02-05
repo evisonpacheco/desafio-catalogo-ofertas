@@ -111,6 +111,8 @@ A interface web permite:
 
 - Delays Aleatórios: Para evitar comportamentos suspeitos.
 
+- Escolha Aleatória de User Agent
+
 - Modo Headless: Executa o navegador em segundo plano.
 
 - Erros são registrados em um arquivo de log (scraper.log) para facilitar a depuração.
