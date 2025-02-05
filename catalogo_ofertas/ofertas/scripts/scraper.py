@@ -77,13 +77,13 @@ def extract_product_data(product):
 
         try:
             original_price_element = product.find_element(By.CSS_SELECTOR, '.andes-money-amount--previous')
-            price_without_discount = float(original_price_element.text.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
+            price_without_discount = Decimal(original_price_element.text.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
         except NoSuchElementException:
             price_without_discount = None
 
         try:
             discount_element = product.find_element(By.CSS_SELECTOR, '.andes-money-amount__discount')
-            discount_percentage = float(discount_element.text.replace('% OFF', '').strip())
+            discount_percentage = Decimal(discount_element.text.replace('% OFF', '').strip())
         except NoSuchElementException:
             discount_percentage = 0
 
