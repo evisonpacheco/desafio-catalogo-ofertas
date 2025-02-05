@@ -5,7 +5,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     installment = models.CharField(max_length=100)
-    link = models.URLField(max_length=500)
+    link = models.TextField()
     price_without_discount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     delivery_type = models.CharField(max_length=100)

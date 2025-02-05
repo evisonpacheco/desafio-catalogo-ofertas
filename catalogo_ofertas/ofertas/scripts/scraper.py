@@ -1,5 +1,6 @@
 from ofertas.models import Product
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -51,11 +52,20 @@ def run():
                 price = float(price_str.replace('R$', '').replace('\n', '').replace('.', '').replace(',', '.'))
                 
                 link = product.find_element(By.CSS_SELECTOR, '.poly-component__title').get_attribute('href')
-                
-                image_element = product.find_element(By.CSS_SELECTOR, '.poly-component__picture')
-                image = image_element.get_attribute('src') if image_element else None
-                if image and 'data:' in image:
-                    image = None
+
+                # Extrair a imagem do produto
+                image = None
+                try:
+                    image_element = product.find_element(By.CSS_SELECTOR, 'img.poly-component__picture')
+                    image = image_element.get_attribute('data-src') or image_element.get_attribute('src')
+                    
+                    # Ignorar placeholders
+                    if image and (image.startswith('data:image') or 'placeholder' in image):
+                        image = None
+                except NoSuchElementException:
+                    logger.warning(f"Imagem não encontrada para o produto: {name}")
+                except Exception as e:
+                    logger.error(f"Erro ao processar imagem: {e}")
                 
                 installment = product.find_element(By.CSS_SELECTOR, '.poly-price__installments').text.strip()
                 
@@ -79,7 +89,7 @@ def run():
                 except:
                     discount_percentage = None
                 
-                Product.objects.create_or_update(
+                Product.objects.update_or_create(
                     link=link,
                     defaults={
                         'image': image,
@@ -91,7 +101,7 @@ def run():
                         'delivery_type': delivery_type,
                         'free_shipping': free_shipping
                     }
-)
+                )
 
                 logger.info(f"Produto salvo: {name} - R${price}")
             except NoSuchElementException as e:
