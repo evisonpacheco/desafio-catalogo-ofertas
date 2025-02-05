@@ -66,12 +66,14 @@ def extract_product_data(product):
         installment = product.find_element(By.CSS_SELECTOR, '.poly-price__installments').text.strip()
 
         try:
-            delivery_type_element = product.find_element(By.CSS_SELECTOR, '.poly-component__shipping')
-            delivery_type = delivery_type_element.text.strip()
-            free_shipping = 'grátis' in delivery_type.lower()
+            delivery_type = 'Normal' 
+            if product.find_elements(By.CSS_SELECTOR, '.poly-component__shipped-from'): 
+                delivery_type = 'Full'
+            free_shipping = bool(product.find_elements(By.CSS_SELECTOR, '.poly-component__shipping'))
         except NoSuchElementException:
-            delivery_type = None
+            delivery_type = 'Normal'
             free_shipping = False
+            print("Elemento não encontrado, tratando com valores padrão")
 
         try:
             original_price_element = product.find_element(By.CSS_SELECTOR, '.andes-money-amount--previous')
