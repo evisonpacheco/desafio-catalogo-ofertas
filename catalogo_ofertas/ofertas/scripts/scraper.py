@@ -79,17 +79,19 @@ def run():
                 except:
                     discount_percentage = None
                 
-                Product.objects.create(
-                    image=image,
-                    name=name,
-                    price=price,
-                    installment=installment,
+                Product.objects.create_or_update(
                     link=link,
-                    price_without_discount=price_without_discount,
-                    discount_percentage=discount_percentage,
-                    delivery_type=delivery_type,
-                    free_shipping=free_shipping
-                )
+                    defaults={
+                        'image': image,
+                        'name': name,
+                        'price': price,
+                        'installment': installment,
+                        'price_without_discount': price_without_discount,
+                        'discount_percentage': discount_percentage,
+                        'delivery_type': delivery_type,
+                        'free_shipping': free_shipping
+                    }
+)
 
                 logger.info(f"Produto salvo: {name} - R${price}")
             except NoSuchElementException as e:
